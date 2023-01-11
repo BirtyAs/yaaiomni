@@ -47,7 +47,26 @@ public partial class Plugin : TerrariaPlugin
             nameof(this.Hook_Lava_KillTile),
             typeof(WorldGen)
                 .GetMethod(nameof(WorldGen.KillTile), bfany)!,
-            this.Hook_Lava_KillTile);
+            this.Hook_Lava_KillTile
+        this.Detour(
+            ".. GetPlayerData",
+            typeof(TShockAPI.DB.CharacterManager)
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.GetPlayerData), bfany)!,
+            (Func<TShockAPI.DB.CharacterManager, TSPlayer, int, PlayerData> orig, TShockAPI.DB.CharacterManager self, TSPlayer tsp, int accid) =>
+            {
+                var data = orig(self, tsp, accid);
+                Console.WriteLine($"GetPlayerData with existing {tsp.TPlayer.hair} and data {data.hair}");
+                return data;
+            });
+        this.Detour(
+            ".. InsertPlayerData",
+            typeof(TShockAPI.DB.CharacterManager)
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), bfany)!,
+            (Func<TShockAPI.DB.CharacterManager, TSPlayer, bool, bool> orig, TShockAPI.DB.CharacterManager self, TSPlayer tsp, bool cmd) =>
+            {
+                Console.WriteLine($"InsertPlayerData with existing {tsp.TPlayer.hair}");
+                return orig(self, tsp, cmd);
+            });
     }
 
     private void OnReload(ReloadEventArgs? e)
