@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
@@ -47,7 +47,7 @@ public partial class Plugin : TerrariaPlugin
             nameof(this.Hook_Lava_KillTile),
             typeof(WorldGen)
                 .GetMethod(nameof(WorldGen.KillTile), bfany)!,
-            this.Hook_Lava_KillTile
+            this.Hook_Lava_KillTile);
         this.Detour(
             ".. GetPlayerData",
             typeof(TShockAPI.DB.CharacterManager)
